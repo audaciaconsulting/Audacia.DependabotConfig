@@ -1,4 +1,5 @@
-# Audacia.DependabotConfig
+# Overview
+
 Centralised [Dependabot](https://docs.github.com/en/code-security/dependabot) configuration for Audacia repositories, with an automated flow for rolling out changes across the organisation.
 
 Rather than maintaining `.github/dependabot.yaml` by hand in every repository, this repository holds a single source of truth and propagates it as reviewable pull requests wherever it's needed.

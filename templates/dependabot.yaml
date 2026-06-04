@@ -11,5 +11,8 @@ updates:
       semver-patch-days: 7
     groups:
       main-application: 
-        patterns: ["*"]
-        update-types: ["minor", "patch"]
+        patterns: 
+          - "*"
+        update-types: 
+          - "minor"
+          - "patch"

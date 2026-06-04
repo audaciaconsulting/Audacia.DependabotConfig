@@ -1,0 +1,15 @@
+version: 2
+updates:
+  - packacge-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    cooldown:
+      semver-major-days: 30
+      semver-minor-days: 14
+      semver-patch-days: 7
+    groups:
+      main-application: 
+        patterns: ["*"]
+        update-types: ["minor", "patch"]

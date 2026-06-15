@@ -1,0 +1,21 @@
+name: Sync Dependabot Config
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'templates/dependabot.yaml'
+      - '.github/sync.yaml'
+  schedule:
+    - cron: '0 8 * * 1'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: BetaHuhn/repo-file-sync-action@v1
+        with:
+          GH_PAT: ${{ secrets.ORG_SYNC_PAT }}
+          CONFIG_PATH: .github/sync.yaml

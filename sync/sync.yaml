@@ -1,0 +1,34 @@
+group:
+  repos: |
+    audacia/Audacia.CodeAnalysis
+    audacia/Audacia.Build
+    audacia/Audacia.Seed
+    audacia/Audacia.Auth
+    audacia/Audacia.Mail
+    audacia/Audacia.Core
+    audacia/Audacia.Cryptography
+    audacia/Audacia.Middleware.RobotsMetaTagMiddleware
+    audacia/Audacia.SecureHeadersMiddleware
+    audacia/Audacia.Primitives
+    audacia/Audacia.Azure
+    audacia/Audacia.DataAccess
+    audacia/Audacia.ExceptionHandling
+    audacia/Audacia.Log
+    audacia/Audacia.Spreadsheets
+    audacia/Audacia.Random
+    audacia/Audacia.XUnitExtensions
+    audacia/Audacia.Commands
+    audacia/Audacia.Legacy
+    audacia/Audacia.Angular
+    audacia/Audacia.DataScienceTools
+    audacia/Audacia.Testing.Playwright.Helper
+    audacia/Audacia.UnitTest
+    audacia/Audacia.TechTalk.Failover
+    audacia/Audacia.OrToolsPlayground
+    audacia/Audacia.Locality
+    audacia/Audacia.Typescript
+    audacia/Audacia.TypescriptExtensions
+    audacia/Audacia.Build.AWS
+  files:
+    - source: templates/dependabot.yaml
+      dest: .github/dependabot.yaml

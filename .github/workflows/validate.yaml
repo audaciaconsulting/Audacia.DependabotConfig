@@ -35,13 +35,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-      - name: Install PyYAML
-        run: pip install pyyaml
       - name: Validate sync.yaml
-        run: python .github/scripts/validate_sync.py
+        shell: pwsh
+        run: |
+          Install-Module -Name powershell-yaml -Force -Scope CurrentUser
+          ./.github/scripts/validate_sync.ps1
 
   actionlint:
     name: Action lint

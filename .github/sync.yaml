@@ -1,23 +1,6 @@
 group:
   repos: |
-    audacia/Audacia.Seed
-    audacia/Audacia.Auth
-    audacia/Audacia.Mail
-    audacia/Audacia.Core
-    audacia/Audacia.Cryptography
-    audacia/Audacia.Middleware.RobotsMetaTagMiddleware
-    audacia/Audacia.SecureHeadersMiddleware
-    audacia/Audacia.Primitives
-    audacia/Audacia.Azure
-    audacia/Audacia.DataAccess
-    audacia/Audacia.ExceptionHandling
     audacia/Audacia.Log
-    audacia/Audacia.Spreadsheets
-    audacia/Audacia.Random
-    audacia/Audacia.XUnitExtensions
-    audacia/Audacia.Commands
-    audacia/Audacia.UnitTest
-    audacia/Audacia.Locality
   files:
     - source: templates/dependabot.yaml
       dest: .github/dependabot.yaml

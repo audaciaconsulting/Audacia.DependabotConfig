@@ -1,7 +1,5 @@
 group:
   repos: |
-    audacia/Audacia.CodeAnalysis
-    audacia/Audacia.Build
     audacia/Audacia.Seed
     audacia/Audacia.Auth
     audacia/Audacia.Mail
@@ -18,17 +16,8 @@ group:
     audacia/Audacia.Random
     audacia/Audacia.XUnitExtensions
     audacia/Audacia.Commands
-    audacia/Audacia.Legacy
-    audacia/Audacia.Angular
-    audacia/Audacia.DataScienceTools
-    audacia/Audacia.Testing.Playwright.Helper
     audacia/Audacia.UnitTest
-    audacia/Audacia.TechTalk.Failover
-    audacia/Audacia.OrToolsPlayground
     audacia/Audacia.Locality
-    audacia/Audacia.Typescript
-    audacia/Audacia.TypescriptExtensions
-    audacia/Audacia.Build.AWS
   files:
     - source: templates/dependabot.yaml
       dest: .github/dependabot.yaml

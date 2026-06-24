@@ -19,10 +19,6 @@ updates:
       semver-patch-days: 7
       default-days: 7
 
-    # Auto-request review on every PR
-    reviewers:
-      - "dependabot-update-reviewers"
-
     open-pull-requests-limit: 5
 
     # Group dependency updates into individual PRs for the following groups.

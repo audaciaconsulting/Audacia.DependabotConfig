@@ -16,6 +16,7 @@ Rather than maintaining `.github/dependabot.yaml` by hand in every repository, t
 1. Add the repository to `sync.yaml`.
 2. Open a pull request against `main`.
 3. Once merged, the sync workflow runs and opens the corresponding pull request in the target repository.
+4. Update/renew the fine-grained PAT to include the new repository.
 
 ## Repository layout
 
@@ -27,4 +28,3 @@ Rather than maintaining `.github/dependabot.yaml` by hand in every repository, t
 ## Licence
 
 See [LICENSE](LICENSE).
-

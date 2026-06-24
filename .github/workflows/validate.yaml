@@ -1,0 +1,50 @@
+name: Validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  yamllint:
+    name: YAML lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run yamllint
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          file_or_dir: templates/dependabot.yaml .github/sync.yaml
+          config_file: .yamllint.yaml
+
+  dependabot-schema:
+    name: Dependabot config schema
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Install check-jsonschema
+        run: pip install check-jsonschema==0.33.3
+      - name: Validate dependabot template against schema
+        run: check-jsonschema --builtin-schema vendor.dependabot templates/dependabot.yaml
+
+  sync-config:
+    name: Sync config sanity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate sync.yaml
+        shell: pwsh
+        run: |
+          Install-Module -Name powershell-yaml -Force -Scope CurrentUser
+          ./.github/scripts/validate_sync.ps1
+
+  actionlint:
+    name: Action lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run actionlint
+        uses: raven-actions/actionlint@v2

@@ -1,0 +1,6 @@
+group:
+  repos: |
+    audacia/Audacia.Log
+  files:
+    - source: templates/dependabot.yaml
+      dest: .github/dependabot.yaml

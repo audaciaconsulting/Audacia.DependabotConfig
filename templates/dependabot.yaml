@@ -9,9 +9,9 @@ updates:
       semver-minor-days: 14
       semver-patch-days: 7
     groups:
-      main-application: 
-        patterns: 
+      main-application:
+        patterns:
           - "*"
-        update-types: 
+        update-types:
           - "minor"
           - "patch"

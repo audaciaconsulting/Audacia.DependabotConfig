@@ -6,4 +6,8 @@
 
 - Created `dependabot.yaml` with default values. (#211127).
 
-- Added inital content to `README.md`.
+- Created `sync-dependabot.yaml` with task to push `dependabot.yaml` to Audacia repositories when changes are made to values.
+
+- Created `sync.yaml` file with list of Audacia repositories which will receive pull requests from changes.
+
+- Added initial content to `README.md`.

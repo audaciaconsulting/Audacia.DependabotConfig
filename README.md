@@ -25,6 +25,10 @@ Rather than maintaining `.github/dependabot.yaml` by hand in every repository, t
 | `sync.yaml` | The list of repositories that should receive the Dependabot configuration. |
 | `.github/dependabot.yaml` | The Dependabot configuration distributed to each listed repository. |
 
+## Adding a reviewer
+
+To add a reviewer to dependabot PRs add them to the GitHub organisation's group dependabot-update-reviewers.
+
 ## Licence
 
 See [LICENSE](LICENSE).

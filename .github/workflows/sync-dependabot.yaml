@@ -4,8 +4,11 @@ on:
   push:
     branches: [main]
     paths:
-      - "templates/dependabot.yaml"
-      - ".github/sync.yaml"
+      - 'templates/dependabot.yaml'
+      - 'templates/dependabot-checklist.yaml'
+      - 'templates/CODEOWNERS'
+  schedule:
+    - cron: '0 8 * * 1'
 
 jobs:
   sync:
@@ -17,3 +20,4 @@ jobs:
         with:
           GH_PAT: ${{ secrets.ORG_SYNC_PAT }}
           CONFIG_PATH: .github/sync.yaml
+          TEAM_REVIEWERS: "dependabot-update-reviewers"

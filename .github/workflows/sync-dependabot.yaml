@@ -5,8 +5,8 @@ on:
     branches: [main]
     paths:
       - 'templates/dependabot.yaml'
-      - '.github/sync.yaml'
-      - '.github/workflows/dependabot-checklist.yaml'
+      - 'templates/dependabot-checklist.yaml'
+      - 'templates/CODEOWNERS'
   schedule:
     - cron: '0 8 * * 1'
 

@@ -13,7 +13,7 @@ updates:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
 
-    # Safeguard against defective updates by leaving a cooldown period to allow for issues to be addressed.    
+    # Safeguard against defective updates by leaving a cooldown period to allow for issues to be addressed.
     cooldown:
       semver-minor-days: 14
       semver-patch-days: 7

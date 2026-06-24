@@ -7,4 +7,4 @@ group:
     - source: templates/dependabot-checklist.yaml
       dest: .github/workflows/dependabot-checklist.yaml
     - source: templates/CODEOWNERS
-      dest: .github/CODEOWNERS    
+      dest: .github/CODEOWNERS

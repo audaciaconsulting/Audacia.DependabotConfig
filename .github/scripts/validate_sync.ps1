@@ -48,21 +48,21 @@ foreach ($groupName in $config.Keys) {
         $errors.Add("group '$groupName' has no 'repos'")
     }
     elseif ($reposRaw -is [string]) {
-        $repos = $reposRaw -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ }
+        $repos = @($reposRaw -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ })
     }
     elseif ($reposRaw -is [System.Collections.IEnumerable]) {
-        $repos = $reposRaw | ForEach-Object { "$_".Trim() } | Where-Object { $_ }
+        $repos = @($reposRaw | ForEach-Object { "$_".Trim() } | Where-Object { $_ })
     }
     else {
         $errors.Add("group '$groupName': 'repos' must be a list or string")
     }
 
-    if (($null -ne $reposRaw) -and $repos.Count -eq 0) {
+    if (($null -ne $reposRaw) -and @($repos).Count -eq 0) {
         $errors.Add("group '$groupName': 'repos' is empty")
     }
 
     foreach ($repo in $repos) {
-        $parts = $repo -split '/'
+        $parts = @($repo -split '/')
         if ($parts.Count -ne 2 -or ($parts | Where-Object { -not $_ })) {
             $errors.Add("group '$groupName': repo '$repo' is not in 'owner/name' form")
         }

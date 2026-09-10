@@ -1,6 +1,10 @@
 group:
   repos: |
-    audacia/Audacia.Log
+    audaciaconsulting/Audacia.Log
   files:
     - source: templates/dependabot.yaml
       dest: .github/dependabot.yaml
+    - source: templates/dependabot-checklist.yaml
+      dest: .github/workflows/dependabot-checklist.yaml
+    - source: templates/CODEOWNERS
+      dest: .github/CODEOWNERS

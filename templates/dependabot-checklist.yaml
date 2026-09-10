@@ -19,7 +19,7 @@ jobs:
           gh pr comment "$PR_URL" --body-file - <<'EOF'
           ### Reviewer Checklist
           - [ ] Code has been reviewed and doesn't contain any breaking changes
-          - [ ] All tests have been ran and passed
-          - [ ] Build has been ran locally
+          - [ ] All tests have been run and passed
+          - [ ] Build has been run locally
           - [ ] Version numbers in `.csproj` or `Directory.Build.props` have been incremented correctly
           EOF

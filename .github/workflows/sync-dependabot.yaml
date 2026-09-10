@@ -7,6 +7,7 @@ on:
       - 'templates/dependabot.yaml'
       - 'templates/dependabot-checklist.yaml'
       - 'templates/CODEOWNERS'
+      - '.github/sync.yaml'
   schedule:
     - cron: '0 8 * * 1'
 

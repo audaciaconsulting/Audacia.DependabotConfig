@@ -1,4 +1,11 @@
 version: 2
+
+registries:
+  audacia-nuget:
+    type: "nuget-feed"
+    url: "https://pkgs.dev.azure.com/audacia/Audacia.Public/_packaging/AudaciaPublic/nuget/v3/index.json"
+    token: "${{ secrets.AUDACIA_NUGET_TOKEN }}"
+
 updates:
   - package-ecosystem: "nuget"
     directory: "/"

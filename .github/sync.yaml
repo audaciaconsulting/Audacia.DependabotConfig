@@ -1,6 +1,8 @@
 group:
   repos: |
     audaciaconsulting/Audacia.Log
+    audaciaconsulting/Audacia.Commands
+    audaciaconsulting/Audacia.DataAccess
   files:
     - source: templates/dependabot.yaml
       dest: .github/dependabot.yaml

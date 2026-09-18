@@ -3,6 +3,9 @@ group:
     audaciaconsulting/Audacia.Log
     audaciaconsulting/Audacia.Commands
     audaciaconsulting/Audacia.DataAccess
+    audaciaconsulting/Audacia.Seed
+    audaciaconsulting/Audacia.Auth
+    audaciaconsulting/Audacia.Mail
   files:
     - source: templates/dependabot.yaml
       dest: .github/dependabot.yaml

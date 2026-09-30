@@ -23,3 +23,11 @@ jobs:
           - [ ] Build has been run locally
           - [ ] Version numbers in `.csproj` or `Directory.Build.props` have been incremented correctly
           EOF
+
+  # Repos can opt out by setting the repository variable DEPENDABOT_TEAMS_NOTIFY to 'false'.
+  notify-teams:
+    if: github.actor == 'dependabot[bot]' && vars.DEPENDABOT_TEAMS_NOTIFY != 'false'
+    permissions: {}
+    uses: audaciaconsulting/Audacia.DependabotConfig/.github/workflows/notify-teams.yaml@main
+    secrets:
+      TEAMS_WEBHOOK_URL: ${{ secrets.DEPENDABOT_TEAMS_WEBHOOK }}

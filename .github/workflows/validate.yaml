@@ -14,7 +14,7 @@ jobs:
       - name: Run yamllint
         uses: ibiqlik/action-yamllint@v3
         with:
-          file_or_dir: templates/dependabot.yaml templates/dependabot-checklist.yaml .github/sync.yaml
+          file_or_dir: templates/dependabot.yaml templates/dependabot-checklist.yaml .github/sync.yaml .github/workflows/notify-teams.yaml
           config_file: .yamllint.yaml
 
   dependabot-schema:

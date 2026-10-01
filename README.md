@@ -25,9 +25,10 @@ Rather than maintaining `.github/dependabot.yaml` by hand in every repository, t
 | --- | --- |
 | `.github/sync.yaml` | The list of repositories that should receive the Dependabot configuration. |
 | `templates/dependabot.yaml` | The Dependabot configuration distributed to each listed repository. |
-| `templates/dependabot-checklist.yaml` | Workflow distributed to each listed repository that posts a reviewer checklist and a Teams notification on Dependabot PRs. |
+| `templates/dependabot-checklist.yaml` | Workflow distributed to each listed repository that posts a reviewer checklist, a Teams notification and a tracking issue for Dependabot PRs. |
 | `templates/CODEOWNERS` | Assigns the reviewer group to Dependabot PRs. |
 | `.github/workflows/notify-teams.yaml` | Reusable workflow, called from each listed repository, that posts new Dependabot PRs to Teams. |
+| `.github/workflows/dependabot-issue.yaml` | Reusable workflow, called from each listed repository, that opens and closes a tracking issue for each Dependabot PR. |
 
 ## Adding a reviewer
 
@@ -35,22 +36,24 @@ To add a reviewer to dependabot PRs add them to the GitHub organisation's group 
 
 ## Teams notifications
 
-When Dependabot opens a pull request in a listed repository, a card linking to it is posted to a Teams channel.
+New Dependabot PRs are posted to a Teams channel by [`notify-teams.yaml`](.github/workflows/notify-teams.yaml).
 
-The synced checklist workflow calls the reusable [`notify-teams.yaml`](.github/workflows/notify-teams.yaml) workflow in this repository. Changes to it take effect immediately in all listed repositories once merged to `main`.
+The channel's webhook URL is stored in the `DEPENDABOT_TEAMS_WEBHOOK` organisation secret, which each listed repository needs access to. To change the channel, create a flow in the channel's **Workflows** from the *Send webhook alerts to a channel* template and update the secret with the generated URL.
 
-The channel's webhook URL is held in the `DEPENDABOT_TEAMS_WEBHOOK` **organisation** Actions secret. It must be an organisation secret as reusable workflows run in the caller's context and cannot read secrets from this repository. Access should be restricted to the repositories listed in `sync.yaml`.
+## Tracking issues
 
-To set up or change the channel:
+[`dependabot-issue.yaml`](.github/workflows/dependabot-issue.yaml) raises an issue for each Dependabot PR and closes it when the PR is merged (*completed*) or closed without merging (*not planned*). Issues must be enabled in the repository.
 
-1. In the Teams channel, open **Workflows** and create a flow from the *Send webhook alerts to a channel* template.
-2. Copy the generated URL into the `DEPENDABOT_TEAMS_WEBHOOK` organisation secret.
+The issue is linked by a `Tracking issue: #n` comment on the PR; if that comment is deleted, the issue must be closed by hand.
 
-### Opting out
+## Opting out
 
-Notifications are on by default. To turn them off for a repository, add a repository **variable** (Settings → Secrets and variables → Actions → Variables) named `DEPENDABOT_TEAMS_NOTIFY` with the value `false`.
+Both features are on by default. To turn one off for a repository, set the repository Actions variable below to `false`:
 
-An opted-out repository does not need access to the `DEPENDABOT_TEAMS_WEBHOOK` secret.
+| Feature | Variable |
+| --- | --- |
+| Teams notifications | `DEPENDABOT_TEAMS_NOTIFY` |
+| Tracking issues | `DEPENDABOT_TRACKING_ISSUES` |
 
 ## Licence
 

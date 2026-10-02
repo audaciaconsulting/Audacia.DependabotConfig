@@ -4,19 +4,12 @@ name: Dependabot tracking issue
 # target repository. Runs in the caller's context, so github.event is the
 # caller's pull_request_target event and GITHUB_TOKEN belongs to the caller.
 #
-# opened   -> raise a tracking issue and record its number in a PR comment
-# closed   -> close the tracking issue (completed if merged, not planned otherwise)
-# reopened -> reopen the tracking issue
-#
-# The issue number is recorded in a PR comment rather than a "Closes #n" keyword
-# in the PR body, as Dependabot rewrites the body whenever it updates the PR.
+# The issue is found by the PR URL in its body rather than a "Closes #n" keyword
+# in the PR body, as Dependabot rewrites the PR body whenever it updates the PR.
 on:
   workflow_call:
 
 permissions: {}
-
-env:
-  MARKER: dependabot-tracking-issue
 
 jobs:
   open:
@@ -42,33 +35,24 @@ jobs:
           fi
 
           # Guard against duplicates if the workflow is re-run.
-          existing=$(gh api --paginate "repos/$REPO/issues/$PR_NUMBER/comments" \
-            --jq '.[] | select(.user.login == "github-actions[bot]") | .body' \
-            | grep -oE "$MARKER:[0-9]+" | head -n1 | cut -d: -f2 || true)
+          # Only scans the 100 most recent dependency issues, fine for a rerun soon after.
+          existing=$(gh issue list --repo "$REPO" --label dependencies --state all --limit 100 --json number,body \
+            | jq -r --arg url "$PR_URL" '.[] | select(.body | contains($url + ".")) | .number' | head -n1)
           if [ -n "$existing" ]; then
             echo "Tracking issue #$existing already exists."
             exit 0
           fi
 
-          # Dependabot normally creates this label; ignore the error if it already exists.
-          gh label create dependencies --repo "$REPO" --color 0366d6 \
-            --description "Pull requests that update a dependency file" 2>/dev/null || true
-
           body=$(printf 'Tracking issue for Dependabot pull request %s.\n\nThis issue is closed automatically when the pull request is merged or closed.\n' "$PR_URL")
           issue_url=$(gh issue create --repo "$REPO" --title "Dependabot: $PR_TITLE" --body "$body" --label dependencies)
-          issue_number="${issue_url##*/}"
 
-          gh pr comment "$PR_NUMBER" --repo "$REPO" \
-            --body "$(printf 'Tracking issue: #%s\n\n<!-- %s:%s -->\n' "$issue_number" "$MARKER" "$issue_number")"
-
-          echo "Created tracking issue #$issue_number."
+          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "Tracking issue: #${issue_url##*/}"
 
   update:
     if: github.event.action == 'closed' || github.event.action == 'reopened'
     runs-on: ubuntu-latest
     permissions:
       issues: write
-      pull-requests: read
     steps:
       - name: Close or reopen tracking issue
         env:
@@ -76,37 +60,23 @@ jobs:
           REPO: ${{ github.repository }}
           ACTION: ${{ github.event.action }}
           MERGED: ${{ github.event.pull_request.merged }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_URL: ${{ github.event.pull_request.html_url }}
         run: |
           set -euo pipefail
 
-          issue=$(gh api --paginate "repos/$REPO/issues/$PR_NUMBER/comments" \
-            --jq '.[] | select(.user.login == "github-actions[bot]") | .body' \
-            | grep -oE "$MARKER:[0-9]+" | head -n1 | cut -d: -f2 || true)
+          # Closing looks in open issues, reopening in closed ones.
+          # Only scans the 100 most recent in that state, fine unless a very old PR is reopened.
+          state=$([ "$ACTION" = "closed" ] && echo open || echo closed)
+          issue=$(gh issue list --repo "$REPO" --label dependencies --state "$state" --limit 100 --json number,body \
+            | jq -r --arg url "$PR_URL" '.[] | select(.body | contains($url + ".")) | .number' | head -n1)
           if [ -z "$issue" ]; then
-            echo "::notice::No tracking issue recorded on $PR_URL; nothing to do."
+            echo "::notice::No $state tracking issue found for $PR_URL; nothing to do."
             exit 0
           fi
 
-          state=$(gh issue view "$issue" --repo "$REPO" --json state --jq '.state')
-
-          if [ "$ACTION" = "reopened" ]; then
-            if [ "$state" = "CLOSED" ]; then
-              gh issue reopen "$issue" --repo "$REPO" --comment "Reopened automatically: $PR_URL was reopened."
-            fi
-            exit 0
-          fi
-
-          if [ "$state" = "CLOSED" ]; then
-            echo "Tracking issue #$issue is already closed."
-            exit 0
-          fi
-
-          if [ "$MERGED" = "true" ]; then
-            gh issue close "$issue" --repo "$REPO" --reason completed \
-              --comment "Closed automatically: $PR_URL was merged."
-          else
-            gh issue close "$issue" --repo "$REPO" --reason "not planned" \
-              --comment "Closed automatically: $PR_URL was closed without being merged."
-          fi
+          # gh skips (exit 0, no comment) if the issue is already in the target state.
+          case "$ACTION/$MERGED" in
+            reopened/*)  gh issue reopen "$issue" --repo "$REPO" --comment "Reopened automatically: $PR_URL was reopened." ;;
+            closed/true) gh issue close "$issue" --repo "$REPO" --reason completed --comment "Closed automatically: $PR_URL was merged." ;;
+            *)           gh issue close "$issue" --repo "$REPO" --reason "not planned" --comment "Closed automatically: $PR_URL was closed without being merged." ;;
+          esac

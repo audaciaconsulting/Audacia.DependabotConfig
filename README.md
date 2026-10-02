@@ -44,7 +44,7 @@ The channel's webhook URL is stored in the `DEPENDABOT_TEAMS_WEBHOOK` organisati
 
 [`dependabot-issue.yaml`](.github/workflows/dependabot-issue.yaml) raises an issue for each Dependabot PR and closes it when the PR is merged (*completed*) or closed without merging (*not planned*). Issues must be enabled in the repository.
 
-The issue is linked by a `Tracking issue: #n` comment on the PR; if that comment is deleted, the issue must be closed by hand.
+The issue is matched to its PR by the PR URL in the issue body, so leave that line intact. A `Tracking issue: #n` comment is also posted on the PR for reference.
 
 ## Opting out
 

@@ -1,0 +1,82 @@
+name: Dependabot tracking issue
+
+# Reusable workflow called from the synced dependabot-checklist workflow in each
+# target repository. Runs in the caller's context, so github.event is the
+# caller's pull_request_target event and GITHUB_TOKEN belongs to the caller.
+#
+# The issue is found by the PR URL in its body rather than a "Closes #n" keyword
+# in the PR body, as Dependabot rewrites the PR body whenever it updates the PR.
+on:
+  workflow_call:
+
+permissions: {}
+
+jobs:
+  open:
+    if: github.event.action == 'opened'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Create tracking issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          set -euo pipefail
+
+          if [ "$(gh api "repos/$REPO" --jq '.has_issues')" != "true" ]; then
+            echo "::warning::Issues are disabled in $REPO; no tracking issue created."
+            exit 0
+          fi
+
+          # Guard against duplicates if the workflow is re-run.
+          # Only scans the 100 most recent dependency issues, fine for a rerun soon after.
+          existing=$(gh issue list --repo "$REPO" --label dependencies --state all --limit 100 --json number,body \
+            | jq -r --arg url "$PR_URL" '.[] | select(.body | contains($url + ".")) | .number' | head -n1)
+          if [ -n "$existing" ]; then
+            echo "Tracking issue #$existing already exists."
+            exit 0
+          fi
+
+          body=$(printf 'Tracking issue for Dependabot pull request %s.\n\nThis issue is closed automatically when the pull request is merged or closed.\n' "$PR_URL")
+          issue_url=$(gh issue create --repo "$REPO" --title "Dependabot: $PR_TITLE" --body "$body" --label dependencies)
+
+          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "Tracking issue: #${issue_url##*/}"
+
+  update:
+    if: github.event.action == 'closed' || github.event.action == 'reopened'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Close or reopen tracking issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          ACTION: ${{ github.event.action }}
+          MERGED: ${{ github.event.pull_request.merged }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          set -euo pipefail
+
+          # Closing looks in open issues, reopening in closed ones.
+          # Only scans the 100 most recent in that state, fine unless a very old PR is reopened.
+          state=$([ "$ACTION" = "closed" ] && echo open || echo closed)
+          issue=$(gh issue list --repo "$REPO" --label dependencies --state "$state" --limit 100 --json number,body \
+            | jq -r --arg url "$PR_URL" '.[] | select(.body | contains($url + ".")) | .number' | head -n1)
+          if [ -z "$issue" ]; then
+            echo "::notice::No $state tracking issue found for $PR_URL; nothing to do."
+            exit 0
+          fi
+
+          # gh skips (exit 0, no comment) if the issue is already in the target state.
+          case "$ACTION/$MERGED" in
+            reopened/*)  gh issue reopen "$issue" --repo "$REPO" --comment "Reopened automatically: $PR_URL was reopened." ;;
+            closed/true) gh issue close "$issue" --repo "$REPO" --reason completed --comment "Closed automatically: $PR_URL was merged." ;;
+            *)           gh issue close "$issue" --repo "$REPO" --reason "not planned" --comment "Closed automatically: $PR_URL was closed without being merged." ;;
+          esac

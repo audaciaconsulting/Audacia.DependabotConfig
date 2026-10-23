@@ -1,0 +1,53 @@
+name: Notify Teams of Dependabot PR
+
+# Reusable workflow called from the synced dependabot-checklist workflow in each
+# target repository. Runs in the caller's context, so github.event is the
+# caller's pull_request_target event and secrets must be passed in by the caller.
+on:
+  workflow_call:
+    secrets:
+      TEAMS_WEBHOOK_URL:
+        description: Teams Workflows "post to a channel when a webhook request is received" URL.
+        required: true
+
+permissions: {}
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      # PR fields are passed via env and built into JSON with jq so untrusted
+      # values (e.g. the PR title) are never interpolated into the shell script.
+      - name: Post to Teams
+        env:
+          WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          jq -n \
+            --arg url "$PR_URL" \
+            --arg title "$PR_TITLE" \
+            --arg number "$PR_NUMBER" \
+            --arg repo "$REPO" \
+            '{
+              type: "message",
+              attachments: [{
+                contentType: "application/vnd.microsoft.card.adaptive",
+                content: {
+                  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                  type: "AdaptiveCard",
+                  version: "1.4",
+                  body: [
+                    { type: "TextBlock", text: "New Dependabot PR", weight: "Bolder", size: "Medium" },
+                    { type: "TextBlock", text: "\($repo) #\($number)", isSubtle: true, spacing: "None" },
+                    { type: "TextBlock", text: $title, wrap: true }
+                  ],
+                  actions: [
+                    { type: "Action.OpenUrl", title: "Review PR", url: $url }
+                  ]
+                }
+              }]
+            }' | curl -fsS -X POST -H 'Content-Type: application/json' --data-binary @- "$WEBHOOK_URL"

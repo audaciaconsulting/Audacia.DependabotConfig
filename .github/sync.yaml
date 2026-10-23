@@ -6,6 +6,18 @@ group:
     audaciaconsulting/Audacia.Seed
     audaciaconsulting/Audacia.Auth
     audaciaconsulting/Audacia.Mail
+    audaciaconsulting/Audacia.Core
+    audaciaconsulting/Audacia.Cryptography
+    audaciaconsulting/Audacia.Middleware.RobotsMetaTagMiddleware
+    audaciaconsulting/Audacia.SecureHeadersMiddleware
+    audaciaconsulting/Audacia.Primitives
+    audaciaconsulting/Audacia.Azure
+    audaciaconsulting/Audacia.ExceptionHandling
+    audaciaconsulting/Audacia.Spreadsheets
+    audaciaconsulting/Audacia.Random
+    audaciaconsulting/Audacia.XUnitExtensions
+    audaciaconsulting/Audacia.UnitTest
+    audaciaconsulting/Audacia.Locality
   files:
     - source: templates/dependabot.yaml
       dest: .github/dependabot.yaml
